@@ -12,9 +12,6 @@
 
 #include "actasp/action_utils.h"
 #include "actasp/executors/MultiPolicyExecutor.h"
-#include "actasp/planners/AnyPlan.h"
-#include "actasp/executors/ReplanningActionExecutor.h"
-#include "learning/RLActionExecutor.h"
 
 #include "actions/ActionFactory.h"
 #include "actions/LogicalNavigation.h"
@@ -44,10 +41,7 @@ using namespace actasp;
 
 typedef actionlib::SimpleActionServer<bwi_kr_execution::ExecutePlanAction> Server;
 
-
-ActionExecutor *dumb_executor;
 ActionExecutor *executor;
-ActionExecutor *smart_executor;
 SarsaActionSelector *selector;
 ActionLogger *action_logger;
 
@@ -153,11 +147,6 @@ void initiateTask(const bwi_kr_execution::ExecutePlanGoalConstPtr& plan, string 
   selector->saveValueInitialState(valueFileName + "_initial"); 
   
   action_logger->setFile((valueFileName+"_actions"));
-
-  if(plan->aspGoal.at(0).body[0].name == "not facing")
-    executor = smart_executor;
-  else
-    executor = dumb_executor;
     
   executor->setGoal(goalRules);
   
@@ -223,14 +212,6 @@ void executePlan(const bwi_kr_execution::ExecutePlanGoalConstPtr& plan, Server* 
   completeTask(valueFileName,begin,time_string);
 
 }
-
-
-enum Modality {
-  iclingo=0,
-  sarsa,
-  iclingoAndSarsa
-};
-
 
 int main(int argc, char**argv) {
   ros::init(argc, argv, "action_executor");
@@ -301,6 +282,7 @@ int main(int argc, char**argv) {
   
   executor = dumb_executor;
 
+
   //need a pointer to the specific type for the observer
 //   executor = new MultiPolicyExecutor(reasoner, reasoner,selector , ActionFactory::actions(),1.5);
 // 
@@ -320,8 +302,7 @@ int main(int argc, char**argv) {
 
   server.shutdown();
 
-  delete dumb_executor;
-  delete smart_executor;
+  delete executor;
   delete action_logger;
   delete selector;
   delete timeValue;
