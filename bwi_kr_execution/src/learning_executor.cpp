@@ -264,7 +264,7 @@ int main(int argc, char**argv) {
 
   boost::filesystem::create_directories(queryDirectory);
   
-  AspKR *reasoner = new RemoteReasoner(MAX_N,queryDirectory,domainDirectory,actionMapToSet(ActionFactory::actions()),10);
+  AspKR *reasoner = new RemoteReasoner(MAX_N,queryDirectory,domainDirectory,actionMapToSet(ActionFactory::actions()),20);
   StaticFacts::retrieveStaticFacts(reasoner, domainDirectory);
 
   TimeReward<SarsaActionSelector::State> *reward = new TimeReward<SarsaActionSelector::State>();
@@ -278,7 +278,7 @@ int main(int argc, char**argv) {
   
   selector = new SarsaActionSelector(reasoner,timeValue,reward,params);
   
-  Modality mode = sarsa;
+  Modality mode = iclingo;
   
     switch(mode) {
     case iclingoAndSarsa: 
@@ -292,7 +292,7 @@ int main(int argc, char**argv) {
       dumb_executor->addExecutionObserver(reward);
       break;
     case iclingo:
-      dumb_executor= new ReplanningActionExecutor(reasoner, new AnyPlan(reasoner,1.),ActionFactory::actions());
+      dumb_executor= new ReplanningActionExecutor(reasoner, reasoner /*new AnyPlan(reasoner,1.)*/,ActionFactory::actions());
   }
   
   smart_executor = new MultiPolicyExecutor(reasoner, reasoner,selector,ActionFactory::actions(),1.5);
