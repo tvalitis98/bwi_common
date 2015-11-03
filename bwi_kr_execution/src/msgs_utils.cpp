@@ -22,6 +22,20 @@ bwi_kr_execution::AspFluent TranslateFluent::operator()(const actasp::AspFluent&
   return bwiFluent;
 }
 
+actasp::AspAtom TranslateAtom::operator()(const bwi_kr_execution::AspAtom& bwiAtom) {
+	std::string atom_str = bwiAtom.name+"(";
+	for (uint i=0; i<bwiAtom.params.size(); i++) {
+		atom_str += bwiAtom.params[i];
+		if (i+1 < bwiAtom.params.size()) atom_str += ","; }
+	atom_str += ")";
+	return actasp::AspAtom(atom_str);
+}
+bwi_kr_execution::AspAtom TranslateAtom::operator()(const actasp::AspAtom& actaspAtom) {
+	bwi_kr_execution::AspAtom bwiAtom;
+	bwiAtom.name = actaspAtom.getName();
+	bwiAtom.params = actaspAtom.getParameters();
+	return bwiAtom;
+}
 
 actasp::AspRule TranslateRule::operator()(const bwi_kr_execution::AspRule& bwiRule) {
   actasp::AspRule actaspRule;

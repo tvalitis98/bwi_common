@@ -5,11 +5,14 @@
 #include "actasp/action_utils.h"
 
 #include "msgs_utils.h"
+#include "StaticFacts.h"
 #include "bwi_kr_execution/UpdateFluents.h"
 #include "bwi_kr_execution/CurrentStateQuery.h"
+#include "bwi_kr_execution/StaticFactQuery.h"
 #include "bwi_kr_execution/ComputePlan.h"
 #include "bwi_kr_execution/ComputeAllPlans.h"
 #include "bwi_kr_execution/IsPlanValid.h"
+#include "bwi_kr_execution/StaticFactQuery.h"
 
 #include <ros/ros.h>
 #include <ros/package.h>
@@ -26,6 +29,7 @@ using namespace bwi_krexec;
 const int MAX_N = 20;
 const std::string queryDirectory("/tmp/bwi_kr_execution/");
 
+string domainDirectory;
 
 
 bool updateFluents(bwi_kr_execution::UpdateFluents::Request  &req,
@@ -46,6 +50,10 @@ bool isPlanvalid(bwi_kr_execution::IsPlanValid::Request  &req,
 bool resetState(std_srvs::Empty::Request &,
                 std_srvs::Empty::Response &);
 
+bool staticFactQuery(bwi_kr_execution::StaticFactQuery::Request &req, bwi_kr_execution::StaticFactQuery::Response &res) throw();
+
+std::list<AspAtom> static_facts;
+
 actasp::AspKR *reasoner;
 
 int main(int argc, char **argv) {
@@ -59,7 +67,6 @@ int main(int argc, char **argv) {
 
   ros::NodeHandle privateNode("~");
   
-  string domainDirectory;
   n.param<std::string>("bwi_kr_execution/domain_directory", domainDirectory, ros::package::getPath("bwi_kr_execution")+"/domain/");
   
   if(domainDirectory.at(domainDirectory.size()-1) != '/')
@@ -81,7 +88,7 @@ int main(int argc, char **argv) {
   ros::ServiceServer compute_all_plans = n.advertiseService("compute_all_plans", computeAllPlans);
   ros::ServiceServer is_plan_valid = n.advertiseService("is_plan_valid", isPlanvalid);
   ros::ServiceServer reset_state = n.advertiseService("reset_state", resetState);
-
+  ros::ServiceServer static_fact_query = n.advertiseService("static_fact_query", staticFactQuery);
 
   //TODO make sure clingo can be executed concurrently, or create multiple instances
 // ros::MultiThreadedSpinner m(2); //we don't really want to potentially block all the available cores
@@ -118,6 +125,23 @@ bool currentStateQuery(bwi_kr_execution::CurrentStateQuery::Request  &req,
   return true;
 }
 
+bool staticFactQuery(bwi_kr_execution::StaticFactQuery::Request &req, bwi_kr_execution::StaticFactQuery::Response &res) throw() {
+
+	vector<AspAtom> facts;
+	transform(req.facts.begin(),req.facts.end(),back_inserter(facts),TranslateAtom());
+
+	if (static_facts.size() == 0) {
+		StaticFacts::retrieveStaticFacts(reasoner, domainDirectory);
+		static_facts = StaticFacts::staticFacts(); }
+
+	bool fact_holds = true;
+	for (uint i=0; i<facts.size(); i++) {
+		fact_holds &= (std::find(static_facts.begin(),static_facts.end(),facts[i]) != static_facts.end()); }
+
+	res.satisfied = fact_holds;
+
+	return true;
+}
 
 bool computePlan(bwi_kr_execution::ComputePlan::Request  &req,
                  bwi_kr_execution::ComputePlan::Response &res) {

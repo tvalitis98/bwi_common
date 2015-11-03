@@ -6,7 +6,6 @@ namespace actasp {
 
 AspAtom::AspAtom(const std::string& formula) throw () :atom(formula) {}
 
-
 unsigned int AspAtom::arity() const throw() {
   return getParameters().size();
 }

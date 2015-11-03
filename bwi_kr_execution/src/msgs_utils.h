@@ -4,10 +4,12 @@
 #include "bwi_kr_execution/AspFluent.h"
 #include "bwi_kr_execution/AspRule.h"
 #include "bwi_kr_execution/AnswerSet.h"
+#include "bwi_kr_execution/AspAtom.h"
 
 #include "actasp/AspFluent.h"
 #include "actasp/AspRule.h"
 #include "actasp/AnswerSet.h"
+#include "actasp/AspAtom.h"
 
 namespace bwi_krexec {
 
@@ -15,6 +17,11 @@ struct TranslateFluent {
   
  actasp::AspFluent operator()(const bwi_kr_execution::AspFluent& bwiFluent);
  bwi_kr_execution::AspFluent operator()(const actasp::AspFluent& actaspFluent);
+};
+
+struct TranslateAtom {
+	actasp::AspAtom operator()(const bwi_kr_execution::AspAtom& bwiAtom);
+	bwi_kr_execution::AspAtom operator()(const actasp::AspAtom& actaspAtom);
 };
 
 struct TranslateRule {

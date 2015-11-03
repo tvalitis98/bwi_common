@@ -18,7 +18,8 @@ add_message_files(
   FILES
     AnswerSet.msg
     AspFluent.msg
-    AspRule.msg)
+    AspRule.msg
+    AspAtom.msg)
 
 ## Generate services in the 'srv' folder
 add_service_files(
@@ -27,7 +28,8 @@ add_service_files(
     ComputePlan.srv
     CurrentStateQuery.srv
     IsPlanValid.srv
-    UpdateFluents.srv)
+    UpdateFluents.srv
+    StaticFactQuery.srv)
 
 ## Generate actions in the 'action' folder
 add_action_files(FILES ExecutePlan.action)
