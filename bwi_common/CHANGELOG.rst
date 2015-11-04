@@ -2,6 +2,25 @@
 Changelog for package bwi_common
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.7 (2015-09-22)
+------------------
+
+0.3.6 (2015-08-25)
+------------------
+
+0.3.5 (2015-08-22)
+------------------
+
+0.3.4 (2015-08-19)
+------------------
+
+0.3.3 (2015-08-05)
+------------------
+* update metapackage contents, adding bwi_loggin, bwi_rqt_plugins and
+  bwi_scavenger
+* remove bwi_web package. closes `#21 <https://github.com/utexas-bwi/bwi_common/issues/21>`_
+* Contributors: Jack O'Quin, Piyush Khandelwal
+
 0.3.2 (2015-03-24)
 ------------------
 
