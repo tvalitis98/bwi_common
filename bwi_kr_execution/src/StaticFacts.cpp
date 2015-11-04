@@ -27,7 +27,7 @@ void StaticFacts::retrieveStaticFacts(AspKR *reasoner, const std::string& domain
         std::string line;
         while (std::getline(infile, line)) {
           if (boost::algorithm::contains(line, "#hide")) {
-            boost::replace_all(line, "#hide", "#show");
+            boost::replace_all(line, "%#hide", "#show");
             query_string_list.push_back(line);
           }
         }
