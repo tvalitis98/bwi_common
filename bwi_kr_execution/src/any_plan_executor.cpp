@@ -13,6 +13,8 @@
 
 #include "bwi_kr_execution/ExecutePlanAction.h"
 
+#include <bwi_msgs/IsExecuting.h>
+
 #include "actions/ActionFactory.h"
 #include "actions/LogicalNavigation.h"
 
@@ -28,6 +30,8 @@
 
 const int MAX_N = 20;
 const std::string queryDirectory("/tmp/bwi_action_execution/");
+
+bool executing_plan = false;
 
 
 using namespace std;
@@ -75,8 +79,14 @@ struct Observer : public ExecutionObserver, public PlanningObserver {
   
 };
 
-void executePlan(const bwi_kr_execution::ExecutePlanGoalConstPtr& plan, Server* as) {
+bool isBusyCallback(bwi_msgs::IsExecutingRequest& req, bwi_msgs::IsExecutingResponse& res) {
+    res.is_busy = executing_plan;
+    
+    return true;
+}
 
+void executePlan(const bwi_kr_execution::ExecutePlanGoalConstPtr& plan, Server* as) {
+  executing_plan = true;
   vector<AspRule> goalRules;
 
   transform(plan->aspGoal.begin(),plan->aspGoal.end(),back_inserter(goalRules),TranslateRule());
@@ -110,6 +120,8 @@ void executePlan(const bwi_kr_execution::ExecutePlanGoalConstPtr& plan, Server* 
     ROS_INFO("Execution failed");
     as->setAborted();
   }
+  
+  executing_plan = false;
 }
 
 int main(int argc, char**argv) {
@@ -150,8 +162,14 @@ int main(int argc, char**argv) {
   executor->addExecutionObserver(&observer);
   replanner->addPlanningObserver(&observer);
 
+  
+  // Initialized plan executor action server
   Server server(privateNode, "execute_plan", boost::bind(&executePlan, _1, &server), false);
   server.start();
+  
+  
+  // Initialize service server to determine if the execute_plan is busy
+  ros::ServiceServer isBusyServer = privateNode.advertiseService("execute_plan_busy", isBusyCallback);
 
   ros::spin();
 

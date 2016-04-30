@@ -21,6 +21,7 @@ add_service_files(
   DIRECTORY srv
   FILES
     DoorHandlerInterface.srv
+    IsExecuting.srv
     QuestionDialog.srv
     SemanticParser.srv
     StopBase.srv
