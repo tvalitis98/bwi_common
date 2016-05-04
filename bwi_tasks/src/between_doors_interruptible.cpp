@@ -7,9 +7,12 @@
 
 #include <std_srvs/Empty.h>
 
+#include <string>
+#include <sstream>
+
 typedef actionlib::SimpleActionClient<bwi_kr_execution::ExecutePlanAction> Client;
 
-bool resumeCallback(std_srvs::EmptyRequest&, std_srvs::EmptyResponse&);
+bool resumeCallback(std_srvs::Empty::Request&, std_srvs::Empty::Response&);
 
 bool executing;
 
@@ -26,7 +29,10 @@ int main(int argc, char**argv) {
   string locationB;
   privateNode.param<string>("b",locationB,"d3_414b2");
 
-  ros::ServiceServer resumeService = n.advertiseService<ros::>(ros::this_node::getName() + "/resume", resumeCallback);
+  
+  std::stringstream serviceName;
+  serviceName << ros::this_node::getName() << "/resume";
+  ros::ServiceServer resumeService = n.advertiseService(serviceName.str(), resumeCallback);
 
   Client client("/action_executor/execute_plan", true);
   client.waitForServer();

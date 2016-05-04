@@ -51,6 +51,10 @@ add_executable(visit_door_list_gui src/visit_door_list_gui.cpp)
 add_dependencies(visit_door_list_gui ${catkin_EXPORTED_TARGETS})
 target_link_libraries(visit_door_list_gui ${catkin_LIBRARIES})
 
+add_executable(between_doors_interruptible src/between_doors_interruptible.cpp)
+add_dependencies(between_doors_interruptible ${catkin_EXPORTED_TARGETS})
+target_link_libraries(between_doors_interruptible ${catkin_LIBRARIES})
+
 install(TARGETS
           back_and_forth_node
           between_doors
