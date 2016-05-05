@@ -47,6 +47,7 @@ int main(int argc, char**argv) {
       // If the node was interrupted, wait for the 
       if(!executing) {
           r.sleep();
+          ros::spinOnce();
           continue;
       }
 
@@ -90,5 +91,6 @@ int main(int argc, char**argv) {
 }
 
 bool resumeCallback(std_srvs::EmptyRequest& req, std_srvs::EmptyResponse& res) {
+    ROS_INFO("Between doors recieved resume recieved a callback! Resuming course...");
     executing = true;
 }
