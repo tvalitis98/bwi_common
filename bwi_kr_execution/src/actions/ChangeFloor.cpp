@@ -32,6 +32,7 @@ void ChangeFloor::run() {
 
   if(!asked) {
 
+    ros::NodeHandle n;
     ros::ServiceClient speak_message_client = n.serviceClient<bwi_services::SpeakMessage>("/speak_message_service_node/speak_message");
     bwi_services::SpeakMessage speak_srv;
 
@@ -65,7 +66,6 @@ void ChangeFloor::run() {
       speak_message_client.call(speak_srv);
 
       // Retrieve current state fluents
-      ros::NodeHandle n;
       ros::ServiceClient krClient = n.serviceClient<bwi_kr_execution::CurrentStateQuery> ( "current_state_query" );
       krClient.waitForExistence();
 
