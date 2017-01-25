@@ -2,6 +2,34 @@
 Changelog for package bwi_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.3.12 (2016-09-14)
+-------------------
+
+0.3.11 (2016-08-27)
+-------------------
+* Added need_assist animation to LEDAnimations.msg in bwi_msgs (`#79
+  <https://github.com/utexas-bwi/bwi_common/issues/79>`_)
+* Contributors: Rolando Fernandez
+
+0.3.10 (2016-08-15)
+-------------------
+
+0.3.9 (2016-08-05)
+------------------
+* added LED control messages, services and actions
+* added a path to certificate messages from scav to virtour
+* added a new scavenger hunt service that can pause/resume current task
+* bwi_msgs: added a ScavStatus msg
+* Contributors: Shiqi Zhang, Rolando Fernandez, Jack O'Quin
+
+0.3.8 (2016-06-06)
+------------------
+* updated simulated calls that open the elevator doors to
+  automatically close those doors.
+* added a service interface to allow teleporting a robot.
+* added service for resolving a change floor request.
+* Contributors: Piyush Khandelwal
+
 0.3.7 (2015-09-22)
 ------------------
 

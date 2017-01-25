@@ -15,17 +15,19 @@ add_definitions(${PCL_DEFINITIONS})
 
 find_package(catkin REQUIRED 
     COMPONENTS
-        roscpp
-        std_msgs
         actionlib
         actionlib_msgs
         bwi_kr_execution
+        bwi_msgs
         cv_bridge
         image_transport
         message_generation
         move_base_msgs
         pcl_ros
+        roscpp
+        sound_play
         std_msgs
+        visualization_msgs
 )
 
 
@@ -33,11 +35,15 @@ find_package(Boost REQUIRED COMPONENTS filesystem)
 
 catkin_package(
     CATKIN_DEPENDS 
-        actionlib_msgs 
-        message_runtime 
+        actionlib_msgs
+        bwi_kr_execution
+        bwi_msgs
+        message_runtime
         move_base_msgs
         roscpp
+        sound_play
         std_msgs
+        visualization_msgs
 )
 
 ###########
@@ -51,17 +57,25 @@ include_directories(
   ${YAML_CPP_INCLUDE_DIRS})
 
 add_executable(scavenger src/scavenger.cpp src/ScavTaskColorShirt.cpp 
+    src/ScavTaskHumanFollowing.cpp
     src/ScavTaskFetchObject.cpp src/ScavTaskWhiteBoard.cpp src/TaskManager.cpp
     src/SearchPlanner.cpp)
+add_dependencies(scavenger ${catkin_EXPORTED_TARGETS})
 target_link_libraries(scavenger
     ${catkin_LIBRARIES}
     ${PCL_LIBRARY_DIRS}
     ${OpenCV_LIBRARIES}
     ${YAML_CPP_LIBRARIES})
 
+add_executable(draw_trajectory trajectory/draw_trajectory.cpp)
+
+target_link_libraries(draw_trajectory ${catkin_LIBRARIES})
+
 #############
 ## Install ##
 #############
 
-install(TARGETS scavenger
-    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+install(TARGETS 
+          scavenger 
+          draw_trajectory
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})

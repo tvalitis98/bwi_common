@@ -1,6 +1,24 @@
 Change history
 ==============
 
+0.3.12 (2016-09-14)
+-------------------
+
+0.3.11 (2016-08-27)
+-------------------
+
+0.3.10 (2016-08-15)
+-------------------
+
+0.3.9 (2016-08-05)
+------------------
+
+0.3.8 (2016-06-06)
+------------------
+* stop_base: fix unit tests (`#53 <https://github.com/utexas-bwi/bwi_common/issues/53>`_)
+* fixed file permissions for nodes.
+* Contributors: Jack O'Quin, Piyush Khandelwal
+
 0.3.7 (2015-09-22)
 ------------------
 * install stop_base nodes (`#37 <https://github.com/jack-oquin/bwi_common/issues/37>`_)

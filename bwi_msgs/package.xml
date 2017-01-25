@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>bwi_msgs</name>
-  <version>0.3.7</version>
+  <version>0.3.12</version>
   <description>
     Contails messages used in the utexas-bwi codebase.
   </description>
@@ -21,6 +21,7 @@
 
   <depend>actionlib_msgs</depend>
   <depend>bwi_planning_common</depend>
+  <depend>geometry_msgs</depend>
   <depend>std_msgs</depend>
 
   <exec_depend>message_runtime</exec_depend>

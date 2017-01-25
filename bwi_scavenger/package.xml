@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>bwi_scavenger</name>
-  <version>0.3.7</version>
+  <version>0.3.12</version>
   <description>
     Robot scavenger hunt interfaces for the Building-Wide Intelligence
     project of the University of Texas at Austin.
@@ -27,7 +27,9 @@
   <depend>move_base_msgs</depend>
   <depend>pcl_ros</depend>
   <depend>roscpp</depend>
+  <depend>sound_play</depend>
   <depend>std_msgs</depend>
+  <depend>visualization_msgs</depend>
   <depend>yaml-cpp</depend>
 
   <exec_depend>message_runtime</exec_depend>

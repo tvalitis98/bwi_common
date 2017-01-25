@@ -8,7 +8,7 @@
 #include "actasp/ExecutionObserver.h"
 #include "actasp/PlanningObserver.h"
 #include "actasp/AnswerSet.h"
-
+#include <actasp/reasoners/Clingo4_2.h>
 
 #include "bwi_kr_execution/ExecutePlanAction.h"
 
@@ -26,7 +26,7 @@
 #include <string>
 
 const int MAX_N = 30;
-const int PLANNER_TIMEOUT = 20; //seconds
+const int PLANNER_TIMEOUT = 40; //seconds
 const std::string queryDirectory("/tmp/bwi_action_execution/");
 
 
@@ -71,6 +71,10 @@ struct Observer : public ExecutionObserver, public PlanningObserver {
    
    ROS_INFO_STREAM(planStream.str());
   }
+  
+    void goalChanged(std::vector<actasp::AspRule> newGoalRules) throw() {}
+  
+  void policyChanged(PartialPolicy* policy) throw() {}
   
   
 };
@@ -147,7 +151,8 @@ int main(int argc, char**argv) {
   
   boost::filesystem::create_directories(queryDirectory);
 
-  AspKR *reasoner = new RemoteReasoner(MAX_N,queryDirectory,domainDirectory,actionMapToSet(ActionFactory::actions()),PLANNER_TIMEOUT);
+  FilteringQueryGenerator *generator = new Clingo4_2("n",queryDirectory,domainDirectory,actionMapToSet(ActionFactory::actions()),PLANNER_TIMEOUT);
+  AspKR *reasoner = new RemoteReasoner(generator, MAX_N,actionMapToSet(ActionFactory::actions()));
   StaticFacts::retrieveStaticFacts(reasoner, domainDirectory);
   
   //need a pointer to the specific type for the observer
