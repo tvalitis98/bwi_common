@@ -1,6 +1,8 @@
 #include "CallElevator.h"
 
 #include <boost/foreach.hpp>
+#include <stdlib.h>
+#include <time.h>
 
 #include "ActionFactory.h"
 #include "../StaticFacts.h"
@@ -97,19 +99,25 @@ void CallElevator::run() {
           std::vector<std::string> door_is_open;
           door_is_open.push_back("Door is open");
 
-          if (direction_text == "up")
-          {
-            goal.type.led_animations = bwi_msgs::LEDAnimations::UP;
-          }
-          else
-          {
-            goal.type.led_animations = bwi_msgs::LEDAnimations::DOWN;
-          }
-          goal.timeout = ros::Duration(0);
-          ac.sendGoal(goal);
+          srand(time(NULL));
+          int randLED = rand()%2;
 
-          speak_srv.request.message = "Could you call the elevator to go " + direction_text + ", and then let me know when the door in front of me opens?";
-          speak_message_client.call(speak_srv);
+          if (randLED == 1)
+          {
+            if (direction_text == "up")
+            {
+              goal.type.led_animations = bwi_msgs::LEDAnimations::UP;
+            }
+            else
+            {
+              goal.type.led_animations = bwi_msgs::LEDAnimations::DOWN;
+            }
+            goal.timeout = ros::Duration(0);
+            ac.sendGoal(goal);
+
+            speak_srv.request.message = "Could you call the elevator to go " + direction_text + ", and then let me know when the door in front of me opens?";
+            speak_message_client.call(speak_srv);
+          }
 
           askToCallElevator.reset(new CallGUI("askToCallElevator",
                                               CallGUI::CHOICE_QUESTION,
