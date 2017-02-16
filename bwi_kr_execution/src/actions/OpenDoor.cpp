@@ -11,9 +11,16 @@
 #include "bwi_kr_execution/AspRule.h"
 #include "bwi_kr_execution/AspFluent.h"
 
-#include <ros/ros.h>
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/client/terminal_state.h>
+#include <ros/package.h>
+#include <ros/ros.h>
+
+#include <ctime>
+#include <fstream>
+#include <iostream>
+#include <stdlib.h>
+#include <time.h>
 
 /*******************************************************
 *                   segbot_led Headers                 *
@@ -51,13 +58,40 @@ void OpenDoor::run() {
   ac.waitForServer();
   bwi_msgs::LEDControlGoal goal;
 
-  if(!asked) {
-    goal.type.led_animations = bwi_msgs::LEDAnimations::NEED_ASSIST;
-    goal.timeout = ros::Duration(0);
-    ac.sendGoal(goal);
+  time_t now = time(0);
 
-    speak_srv.request.message = "Can you open door " + door + ", please?";
-    speak_message_client.call(speak_srv);
+  std::ofstream log_file;
+  std::string log_filename = ros::package::getPath("led_study") + "/data/" + "assist_state.csv";
+
+  if(!asked) {
+
+    srand(time(NULL));
+
+    randLED = rand()%2;
+
+    if (randLED == 1) {
+
+      tm *gmtm = gmtime(&now);
+      log_file.open(log_filename);
+      // state,led,date,time
+      log_file << "start," << randLED << "," << (1900 + gmtm->tm_year) << "-" << (1 + gmtm->tm_mon) << "-" << gmtm->tm_mday << "," << (1 + gmtm->tm_hour) << ":" << (1 + gmtm->tm_min) << ":" << (1 + gmtm->tm_sec) << std::endl;
+      log_file.close();
+
+      goal.type.led_animations = bwi_msgs::LEDAnimations::NEED_ASSIST;
+      goal.timeout = ros::Duration(0);
+      ac.sendGoal(goal);
+
+      speak_srv.request.message = "Can you open door " + door + ", please?";
+      speak_message_client.call(speak_srv);
+    }
+    else {
+
+      tm *gmtm = gmtime(&now);
+      log_file.open(log_filename);
+      // state,led,date,time
+      log_file << "start," << randLED << "," << (1900 + gmtm->tm_year) << "-" << (1 + gmtm->tm_mon) << "-" << gmtm->tm_mday << "," << (1 + gmtm->tm_hour) << ":" << (1 + gmtm->tm_min) << ":" << (1 + gmtm->tm_sec) << std::endl;
+      log_file.close();
+    }
 
     CallGUI askToOpen("askToOpen", CallGUI::DISPLAY,  "Can you open door " + door + ", please?");
     askToOpen.run();
@@ -90,7 +124,7 @@ void OpenDoor::run() {
 
     open = csq.response.answer.satisfied;
 
-    if(!open && (ros::Time::now() - startTime) > ros::Duration(15.0)) {
+    if(!open && (ros::Time::now() - startTime) > ros::Duration(300.0)) {
       failed = true;
       done = true;
     }
@@ -101,10 +135,16 @@ void OpenDoor::run() {
   if(open) {
     ac.cancelAllGoals();
 
-    speak_srv.request.message = "Thanks!";
+    tm *gmtm = gmtime(&now);
+    log_file.open(log_filename);
+    // state,led,date,time
+    log_file << "end," << randLED << "," << (1900 + gmtm->tm_year) << "-" << (1 + gmtm->tm_mon) << "-" << gmtm->tm_mday << "," << (1 + gmtm->tm_hour) << ":" << (1 + gmtm->tm_min) << ":" << (1 + gmtm->tm_sec) << std::endl;
+    log_file.close();
+
+    speak_srv.request.message = "Thanks, Please keep the door open for me so I can pass through.";
     speak_message_client.call(speak_srv);
 
-    CallGUI askToOpen("thank", CallGUI::DISPLAY,  "Thanks!");
+    CallGUI askToOpen("thank", CallGUI::DISPLAY,  "Thanks, Please keep the door open for me so I can pass through.");
     askToOpen.run();
     done = true;
   }

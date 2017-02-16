@@ -1,6 +1,9 @@
 #include "CallElevator.h"
 
 #include <boost/foreach.hpp>
+#include <ctime>
+#include <fstream>
+#include <iostream>
 #include <stdlib.h>
 #include <time.h>
 
@@ -9,10 +12,12 @@
 
 #include "bwi_kr_execution/CurrentStateQuery.h"
 #include "bwi_kr_execution/UpdateFluents.h"
-#include "ros/console.h"
-#include "ros/ros.h"
+
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/client/terminal_state.h>
+#include <ros/console.h>
+#include <ros/package.h>
+#include <ros/ros.h>
 
 /*******************************************************
 *                   segbot_led Headers                 *
@@ -51,6 +56,11 @@ void CallElevator::run() {
   actionlib::SimpleActionClient<bwi_msgs::LEDControlAction> ac("led_control_server", true);
   ac.waitForServer();
   bwi_msgs::LEDControlGoal goal;
+
+  time_t now = time(0);
+
+  std::ofstream log_file;
+  std::string log_filename = ros::package::getPath("led_study") + "/data/" + "elevator_state.csv";
 
   if(!asked && !done) {
     std::string direction_text = (going_up) ? "up" : "down";
@@ -100,10 +110,17 @@ void CallElevator::run() {
           door_is_open.push_back("Door is open");
 
           srand(time(NULL));
-          int randLED = rand()%2;
 
-          if (randLED == 1)
-          {
+          randLED = rand()%2;
+
+          if (randLED == 1) {
+
+            tm *gmtm = gmtime(&now);
+            log_file.open(log_filename);
+            // state,led,date,time
+            log_file << "start," << randLED << "," << (1900 + gmtm->tm_year) << "-" << (1 + gmtm->tm_mon) << "-" << gmtm->tm_mday << "," << (1 + gmtm->tm_hour) << ":" << (1 + gmtm->tm_min) << ":" << (1 + gmtm->tm_sec) << std::endl;
+            log_file.close();
+
             if (direction_text == "up")
             {
               goal.type.led_animations = bwi_msgs::LEDAnimations::UP;
@@ -117,6 +134,13 @@ void CallElevator::run() {
 
             speak_srv.request.message = "Could you call the elevator to go " + direction_text + ", and then let me know when the door in front of me opens?";
             speak_message_client.call(speak_srv);
+          }
+          else{
+            tm *gmtm = gmtime(&now);
+            log_file.open(log_filename);
+            // state,led,date,time
+            log_file << "start," << randLED << "," << (1900 + gmtm->tm_year) << "-" << (1 + gmtm->tm_mon) << "-" << gmtm->tm_mday << "," << (1 + gmtm->tm_hour) << ":" << (1 + gmtm->tm_min) << ":" << (1 + gmtm->tm_sec) << std::endl;
+            log_file.close();
           }
 
           askToCallElevator.reset(new CallGUI("askToCallElevator",
@@ -146,6 +170,12 @@ void CallElevator::run() {
         uf.request.fluents.push_back(open_door);
 
         krClient.call(uf);
+
+        tm *gmtm = gmtime(&now);
+        log_file.open(log_filename);
+        // state,led,date,time
+        log_file << "end," << randLED << "," << (1900 + gmtm->tm_year) << "-" << (1 + gmtm->tm_mon) << "-" << gmtm->tm_mday << "," << (1 + gmtm->tm_hour) << ":" << (1 + gmtm->tm_min) << ":" << (1 + gmtm->tm_sec) << std::endl;
+        log_file.close();
 
         ac.cancelAllGoals();
         CallGUI thanks("thanks", CallGUI::DISPLAY,  "Thanks! Would you mind helping me inside the elevator as well?");
