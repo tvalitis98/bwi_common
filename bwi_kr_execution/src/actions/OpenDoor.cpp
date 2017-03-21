@@ -58,8 +58,6 @@ void OpenDoor::run() {
   ac.waitForServer();
   bwi_msgs::LEDControlGoal goal;
 
-  time_t now = time(0);
-
   std::ofstream log_file;
   std::string log_filename = ros::package::getPath("led_study") + "/data/" + "assist_state.csv";
 
@@ -71,6 +69,7 @@ void OpenDoor::run() {
 
     if (randLED == 1) {
 
+      time_t now = time(0);
       tm *gmtm = gmtime(&now);
       log_file.open(log_filename, std::ios_base::app | std::ios_base::out);
       // state,led,date,time
@@ -85,7 +84,7 @@ void OpenDoor::run() {
       speak_message_client.call(speak_srv);
     }
     else {
-
+      time_t now = time(0);
       tm *gmtm = gmtime(&now);
       log_file.open(log_filename, std::ios_base::app | std::ios_base::out);
       // state,led,date,time
@@ -135,6 +134,7 @@ void OpenDoor::run() {
   if(open) {
     ac.cancelAllGoals();
 
+    time_t now = time(0);
     tm *gmtm = gmtime(&now);
     log_file.open(log_filename, std::ios_base::app | std::ios_base::out);
     // state,led,date,time
