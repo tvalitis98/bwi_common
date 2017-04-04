@@ -39,6 +39,7 @@ bool failed;
 std::string facing_door;
 
 int randLED;
+int randSpeech;
 
 boost::shared_ptr<CallGUI> askToCallElevator;
 

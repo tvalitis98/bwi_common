@@ -40,6 +40,7 @@ private:
  ros::Time startTime;
 
  int randLED;
+ int randSpeech;
 
 };
 

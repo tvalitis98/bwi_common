@@ -66,6 +66,7 @@ void OpenDoor::run() {
     srand(time(NULL));
 
     randLED = rand()%2;
+    randSpeech = rand()%2;
 
     if (randLED == 1) {
 
@@ -79,17 +80,24 @@ void OpenDoor::run() {
       goal.type.led_animations = bwi_msgs::LEDAnimations::NEED_ASSIST;
       goal.timeout = ros::Duration(0);
       ac.sendGoal(goal);
-
-      speak_srv.request.message = "Can you open door " + door + ", please?";
-      speak_message_client.call(speak_srv);
+      if(randSpeech)
+      {
+        speak_srv.request.message = "Can you open door " + door + ", please?";
+        speak_message_client.call(speak_srv);
+      }
     }
     else {
       time_t now = time(0);
       tm *gmtm = gmtime(&now);
       log_file.open(log_filename, std::ios_base::app | std::ios_base::out);
       // state,led,date,time
-      log_file << "start," << randLED << "," << (1900 + gmtm->tm_year) << "-" << (1 + gmtm->tm_mon) << "-" << gmtm->tm_mday << "," << (1 + gmtm->tm_hour) << ":" << (1 + gmtm->tm_min) << ":" << (1 + gmtm->tm_sec) << std::endl;
+      log_file << "start," << randLED << "," <<  randSpeech << (1900 + gmtm->tm_year) << "-" << (1 + gmtm->tm_mon) << "-" << gmtm->tm_mday << "," << (1 + gmtm->tm_hour) << ":" << (1 + gmtm->tm_min) << ":" << (1 + gmtm->tm_sec) << std::endl;
       log_file.close();
+      if(randSpeech)
+      {
+        speak_srv.request.message = "Can you open door " + door + ", please?";
+        speak_message_client.call(speak_srv);
+      }
     }
 
     CallGUI askToOpen("askToOpen", CallGUI::DISPLAY,  "Can you open door " + door + ", please?");
@@ -138,12 +146,13 @@ void OpenDoor::run() {
     tm *gmtm = gmtime(&now);
     log_file.open(log_filename, std::ios_base::app | std::ios_base::out);
     // state,led,date,time
-    log_file << "end," << randLED << "," << (1900 + gmtm->tm_year) << "-" << (1 + gmtm->tm_mon) << "-" << gmtm->tm_mday << "," << (1 + gmtm->tm_hour) << ":" << (1 + gmtm->tm_min) << ":" << (1 + gmtm->tm_sec) << std::endl;
+    log_file << "end," << randLED << "," << randSpeech << "," << (1900 + gmtm->tm_year) << "-" << (1 + gmtm->tm_mon) << "-" << gmtm->tm_mday << "," << (1 + gmtm->tm_hour) << ":" << (1 + gmtm->tm_min) << ":" << (1 + gmtm->tm_sec) << std::endl;
     log_file.close();
-
-    speak_srv.request.message = "Thanks, Please keep the door open for me so I can pass through.";
-    speak_message_client.call(speak_srv);
-
+    if(randSpeech)
+    {
+      speak_srv.request.message = "Thanks, Please keep the door open for me so I can pass through.";
+      speak_message_client.call(speak_srv);
+    }
     CallGUI askToOpen("thank", CallGUI::DISPLAY,  "Thanks, Please keep the door open for me so I can pass through.");
     askToOpen.run();
     done = true;

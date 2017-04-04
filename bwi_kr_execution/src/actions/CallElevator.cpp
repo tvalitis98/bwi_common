@@ -111,6 +111,7 @@ void CallElevator::run() {
           srand(time(NULL));
 
           randLED = rand()%2;
+          randSpeech = rand()%2;
 
           if (randLED == 1) {
 
@@ -118,7 +119,7 @@ void CallElevator::run() {
             tm *gmtm = gmtime(&now);
             log_file.open(log_filename, std::ios_base::app | std::ios_base::out);
             // state,led,date,time
-            log_file << "start," << randLED << "," << (1900 + gmtm->tm_year) << "-" << (1 + gmtm->tm_mon) << "-" << gmtm->tm_mday << "," << (1 + gmtm->tm_hour) << ":" << (1 + gmtm->tm_min) << ":" << (1 + gmtm->tm_sec) << std::endl;
+            log_file << "start," << randLED << "," <<  randSpeech << "," (1900 + gmtm->tm_year) << "-" << (1 + gmtm->tm_mon) << "-" << gmtm->tm_mday << "," << (1 + gmtm->tm_hour) << ":" << (1 + gmtm->tm_min) << ":" << (1 + gmtm->tm_sec) << std::endl;
             log_file.close();
 
             if (direction_text == "up")
@@ -131,17 +132,25 @@ void CallElevator::run() {
             }
             goal.timeout = ros::Duration(0);
             ac.sendGoal(goal);
-
-            speak_srv.request.message = "Could you call the elevator to go " + direction_text + ", and then let me know when the door in front of me opens?";
-            speak_message_client.call(speak_srv);
+            if (randSpeech)
+            {
+              speak_srv.request.message = "Could you call the elevator to go " + direction_text + ", and then let me know when the door in front of me opens?";
+              speak_message_client.call(speak_srv);
+            }
           }
           else{
             time_t now = time(0);
             tm *gmtm = gmtime(&now);
             log_file.open(log_filename, std::ios_base::app | std::ios_base::out);
             // state,led,date,time
-            log_file << "start," << randLED << "," << (1900 + gmtm->tm_year) << "-" << (1 + gmtm->tm_mon) << "-" << gmtm->tm_mday << "," << (1 + gmtm->tm_hour) << ":" << (1 + gmtm->tm_min) << ":" << (1 + gmtm->tm_sec) << std::endl;
+            log_file << "start," << randLED << "," <<  randSpeech << "," (1900 + gmtm->tm_year) << "-" << (1 + gmtm->tm_mon) << "-" << gmtm->tm_mday << "," << (1 + gmtm->tm_hour) << ":" << (1 + gmtm->tm_min) << ":" << (1 + gmtm->tm_sec) << std::endl;
             log_file.close();
+
+            if (randSpeech)
+            {
+              speak_srv.request.message = "Could you call the elevator to go " + direction_text + ", and then let me know when the door in front of me opens?";
+              speak_message_client.call(speak_srv);
+            }
           }
 
           askToCallElevator.reset(new CallGUI("askToCallElevator",
@@ -180,8 +189,11 @@ void CallElevator::run() {
         log_file.close();
 
         ac.cancelAllGoals();
-        CallGUI thanks("thanks", CallGUI::DISPLAY,  "Thanks! Would you mind helping me inside the elevator as well?");
-        thanks.run();
+        if(randSpeech)
+        {
+          CallGUI thanks("thanks", CallGUI::DISPLAY,  "Thanks! Would you mind helping me inside the elevator as well?");
+          thanks.run();
+        }
       } else {
         // A door didn't open in the timeout specified.
         failed = true;
