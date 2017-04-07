@@ -119,7 +119,7 @@ void CallElevator::run() {
             tm *gmtm = gmtime(&now);
             log_file.open(log_filename, std::ios_base::app | std::ios_base::out);
             // state,led,date,time
-            log_file << "start," << randLED << "," <<  randSpeech << "," (1900 + gmtm->tm_year) << "-" << (1 + gmtm->tm_mon) << "-" << gmtm->tm_mday << "," << (1 + gmtm->tm_hour) << ":" << (1 + gmtm->tm_min) << ":" << (1 + gmtm->tm_sec) << std::endl;
+            log_file << "start," << randLED << "," <<  randSpeech << "," << (1900 + gmtm->tm_year) << "-" << (1 + gmtm->tm_mon) << "-" << gmtm->tm_mday << "," << (1 + gmtm->tm_hour) << ":" << (1 + gmtm->tm_min) << ":" << (1 + gmtm->tm_sec) << std::endl;
             log_file.close();
 
             if (direction_text == "up")
@@ -143,7 +143,7 @@ void CallElevator::run() {
             tm *gmtm = gmtime(&now);
             log_file.open(log_filename, std::ios_base::app | std::ios_base::out);
             // state,led,date,time
-            log_file << "start," << randLED << "," <<  randSpeech << "," (1900 + gmtm->tm_year) << "-" << (1 + gmtm->tm_mon) << "-" << gmtm->tm_mday << "," << (1 + gmtm->tm_hour) << ":" << (1 + gmtm->tm_min) << ":" << (1 + gmtm->tm_sec) << std::endl;
+            log_file << "start," << randLED << "," <<  randSpeech << "," << (1900 + gmtm->tm_year) << "-" << (1 + gmtm->tm_mon) << "-" << gmtm->tm_mday << "," << (1 + gmtm->tm_hour) << ":" << (1 + gmtm->tm_min) << ":" << (1 + gmtm->tm_sec) << std::endl;
             log_file.close();
 
             if (randSpeech)
