@@ -197,7 +197,7 @@ void CallElevator::run() {
         log_file.open(log_filename, std::ios_base::app | std::ios_base::out);
         get_count_client.call(get_count_srv);
         // state,led,date,time
-        log_file << "end," << randLED << "," << (1900 + gmtm->tm_year) << "-" << (1 + gmtm->tm_mon) << "-" << gmtm->tm_mday << "," << (1 + gmtm->tm_hour) << ":" << (1 + gmtm->tm_min) << ":" << (1 + gmtm->tm_sec) <<  "," << get_count_srv.response.replan_count << "," << get_count_srv.response.recovery_count << std::endl;
+        log_file << "end," << randLED << ","  <<  randSpeech << "," << (1900 + gmtm->tm_year) << "-" << (1 + gmtm->tm_mon) << "-" << gmtm->tm_mday << "," << (1 + gmtm->tm_hour) << ":" << (1 + gmtm->tm_min) << ":" << (1 + gmtm->tm_sec) <<  "," << get_count_srv.response.replan_count << "," << get_count_srv.response.recovery_count << std::endl;
         log_file.close();
 
         ac.cancelAllGoals();
